@@ -1,0 +1,12 @@
+### Module positions - created on Mon 28 Nov 2022 07:04:05 PM MSK ###
+### Printed by Pcbnew version 6.0.4-6f826c9f35~116~ubuntu18.04.1
+## Unit = mm, Angle = deg.
+## Side : top
+# Ref     Val         Package                               PosX       PosY       Rot  Side
+J19       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical     3.1881    14.7980   30.0000  top
+J20       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical    -4.4775    12.5647  150.0000  top
+J21       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical    13.0945    -2.3604   30.0000  top
+J22       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical   -14.3857    -4.5967  150.0000  top
+J23       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical    11.1506   -10.1600  -90.0000  top
+J24       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical    -8.6056   -10.1600  -90.0000  top
+## End
