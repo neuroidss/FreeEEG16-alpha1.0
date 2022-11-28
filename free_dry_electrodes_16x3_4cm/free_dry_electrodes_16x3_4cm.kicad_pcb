@@ -83,7 +83,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory "output/pos/")
+      (outputdirectory "output/gerber/")
     )
   )
 
