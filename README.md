@@ -1,1 +1,1 @@
-# FreeEEG16-alpha-Dry-Electrodes
+# FreeEEG16-alpha
