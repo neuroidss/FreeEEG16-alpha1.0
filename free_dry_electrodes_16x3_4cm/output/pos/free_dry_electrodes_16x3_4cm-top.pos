@@ -1,12 +1,12 @@
-### Module positions - created on Tue 29 Nov 2022 12:06:20 AM MSK ###
+### Module positions - created on Tue 29 Nov 2022 08:00:57 PM MSK ###
 ### Printed by Pcbnew version 6.0.4-6f826c9f35~116~ubuntu18.04.1
 ## Unit = mm, Angle = deg.
 ## Side : top
-# Ref     Val         Package                               PosX       PosY       Rot  Side
-J19       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical     3.2120    14.7567   30.0000  top
-J20       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical    -4.4870    12.5483  150.0000  top
-J21       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical    13.1107    -2.3883   30.0000  top
-J22       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical   -14.3832    -4.5924  150.0000  top
-J23       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical    11.1687   -10.1600  -90.0000  top
-J24       Conn_01x03  PinHeader_1x03_P1.27mm_Vertical    -8.6229   -10.1600  -90.0000  top
+# Ref     Val                  Package                               PosX       PosY       Rot  Side
+J28       Conn_02x03_Odd_Even  PinHeader_2x03_P1.27mm_Vertical    -8.6310    -9.0270  -90.0000  top
+J29       Conn_02x03_Odd_Even  PinHeader_2x03_P1.27mm_Vertical    11.1679    -9.0270  -90.0000  top
+J30       Conn_02x03_Odd_Even  PinHeader_2x03_P1.27mm_Vertical   -13.4016    -5.1582  150.0000  top
+J31       Conn_02x03_Odd_Even  PinHeader_2x03_P1.27mm_Vertical    12.1331    -2.9612   30.0000  top
+J32       Conn_02x03_Odd_Even  PinHeader_2x03_P1.27mm_Vertical    -3.5021    11.9882  150.0000  top
+J33       Conn_02x03_Odd_Even  PinHeader_2x03_P1.27mm_Vertical     2.2336    14.1852   30.0000  top
 ## End
