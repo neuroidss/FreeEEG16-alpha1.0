@@ -123,7 +123,7 @@ void setup() {
 
   // Start advertising
   pServer->getAdvertising()->start();
-  Serial.println("Waiting a client connection to notify...");
+  //Serial.println("Waiting a client connection to notify...");
 }
 
 void loop() {
@@ -135,6 +135,7 @@ void loop() {
 //            txValue = Serial.read();
 //            pTxCharacteristic->setValue(&txValue, 1);
             pTxCharacteristic->notify();
+            Serial.write(serialReadBuffer, count);
         }
 //        pTxCharacteristic->setValue(&txValue, 1);
 //        pTxCharacteristic->notify();
@@ -146,7 +147,7 @@ void loop() {
     if (!deviceConnected && oldDeviceConnected) {
         delay(500); // give the bluetooth stack the chance to get things ready
         pServer->startAdvertising(); // restart advertising
-        Serial.println("start advertising");
+        //Serial.println("start advertising");
         oldDeviceConnected = deviceConnected;
     }
     // connecting
