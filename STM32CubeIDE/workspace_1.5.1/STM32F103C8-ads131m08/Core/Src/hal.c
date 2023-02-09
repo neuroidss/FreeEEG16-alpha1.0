@@ -206,7 +206,10 @@ void InitGPIO(ads131m0x_dev *dev, bool reset)
     /* Configure the GPIO for 'nCS' as output and set high */
 //    MAP_GPIOPinTypeGPIOOutput(nCS_PORT, nCS_PIN);
 //    MAP_GPIOPinWrite(nCS_PORT, nCS_PIN, nCS_PIN);
-    MAP_GPIOPinWrite(dev->spi_dev.chip_select_port, dev->spi_dev.chip_select_pin, HIGH);
+  	if(SPI_NSS_SOFTWARE)
+  	{
+  		MAP_GPIOPinWrite(dev->spi_dev.chip_select_port, dev->spi_dev.chip_select_pin, HIGH);
+  	}
 
     /* Enable the clock to the GPIO Port M and wait for it to be ready */
 //    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOM);

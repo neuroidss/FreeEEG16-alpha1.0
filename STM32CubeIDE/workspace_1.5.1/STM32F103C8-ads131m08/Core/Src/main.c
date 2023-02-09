@@ -48,76 +48,18 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c1;
-I2C_HandleTypeDef hi2c2;
-DMA_HandleTypeDef hdma_i2c1_rx;
-DMA_HandleTypeDef hdma_i2c1_tx;
-
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 DMA_HandleTypeDef hdma_spi1_rx;
 DMA_HandleTypeDef hdma_spi1_tx;
+DMA_HandleTypeDef hdma_spi2_rx;
+DMA_HandleTypeDef hdma_spi2_tx;
 
-UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-DMA_HandleTypeDef hdma_usart1_rx;
-DMA_HandleTypeDef hdma_usart1_tx;
+DMA_HandleTypeDef hdma_usart2_rx;
+DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
-
-typedef struct OVData {
-//	  uint32_t start;
-	  uint32_t start;
-	  uint32_t counter;
-//	  uint8_t counter;
-  uint8_t datas[uint8_ad_adc_number][uint8_ad_number];
-//  uint32_t end;
-  uint32_t end;
-} OVData;
-OVData ovdata;
-
-typedef struct OVData2 {
-//	  uint32_t start;
-	  uint32_t start;
-	  uint32_t counter;
-//	  uint8_t counter;
-	  uint8_t datas[uint8_ad_adc_number][uint8_ad_number];
-	  uint8_t datas2[uint8_ad_adc_number][uint8_ad_number];
-//  uint32_t end;
-  uint32_t end;
-} OVData2;
-OVData2 ovdata2;
-
-//DMA_BUFFER OVData2 ovdata2s[BLOCKSIZE];
-
-typedef struct OVData3 {
-//	  uint32_t start;
-	  uint32_t start;
-	  uint32_t counter;
-//	  uint8_t counter;
-	  uint8_t datas[uint8_ad_adc_number][uint8_ad_number];
-	  uint8_t datas2[uint8_ad_adc_number][uint8_ad_number];
-	  uint8_t datas3[uint8_ad_adc_number][uint8_ad_number];
-//	  uint8_t plv[(uint8_ad_adc_number*uint8_ad_number)*(uint8_ad_adc_number*uint8_ad_number-1)/2];
-//  uint32_t end;
-  uint32_t end;
-} OVData3;
-OVData3 ovdata3;
-
-
-typedef struct OVData4 {
-//	  uint32_t start;
-	  uint32_t start;
-	  uint32_t counter;
-//	  uint8_t counter;
-	  uint8_t datas[1][uint8_ad_number];
-	  uint8_t datas2[1][uint8_ad_number];
-	  uint8_t datas3[1][uint8_ad_number];
-//	  uint8_t plv[(uint8_ad_adc_number*uint8_ad_number)*(uint8_ad_adc_number*uint8_ad_number-1)/2];
-//  uint32_t end;
-  uint32_t end;
-} OVData4;
-OVData4 ovdata4;
 
 typedef struct ADData24 {
 	  uint8_t b0;
@@ -158,11 +100,7 @@ uint32_t ui32SampleNumber=-1;
 //const uint8_t uint8_data_number_print = 200;
 //const uint8_t uint8_data_number_print2 = 200;
 #define uint8_data_number_print  1300
-#define uint8_data_number_print2  300
-#define uint8_data_number_print7  300
-uint8_t dataBuffer_print2[uint8_data_number_print2];
 uint8_t dataBuffer_print[uint8_data_number_print];
-uint8_t dataBuffer_print7[uint8_data_number_print7];
 
 char buff[256];
 
@@ -175,9 +113,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
-static void MX_USART1_UART_Init(void);
-static void MX_I2C1_Init(void);
-static void MX_I2C2_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
@@ -230,8 +165,16 @@ void UART_Printf(const char* fmt, ...) {
 //    {
 //    }
 //    HAL_UART_Transmit_DMA(&huart1, (uint8_t*)buff, strlen(buff));
-    HAL_UART_Transmit(&huart1, (uint8_t*)buff, strlen(buff),
-                      HAL_MAX_DELAY);
+//    if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//    {
+//        HAL_UART_Transmit(&huart1, (uint8_t*)buff, strlen(buff),
+//                          HAL_MAX_DELAY);
+//    }
+    if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
+    {
+        HAL_UART_Transmit(&huart2, (uint8_t*)buff, strlen(buff),
+                          HAL_MAX_DELAY);
+    }
     va_end(args);
 }
 
@@ -240,9 +183,18 @@ void print_hex(int v, int num_places)
 	  const uint32_t uint32_data_number = (num_places % 4 == 0 ? num_places / 4 : num_places / 4 + 1);
 	  uint32_t uint32_data_number_written;
 //  uint8_t dataBuffer[uint8_data_number];
-  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
-  {
-  }
+//	  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//	  {
+//		  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//		  {
+//		  }
+//	  }
+	  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
+	  {
+		  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+		  {
+		  }
+	  }
   int mask=0, n, num_nibbles, digit, nibbles_max;
 
     for (n=1; n<=num_places; n++)
@@ -281,23 +233,40 @@ void print_hex(int v, int num_places)
 //    HAL_UART_Transmit_DMA(&huart1, dataBuffer, uint8_data_number);
 //    HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer, uint8_data_number, 5000);
 
-    if(UART_DMA)
+//    if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//    {
+//  	  if(UART_DMA)
+//  	  {
+//            if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+//            {
+//              Error_Handler();
+//            }
+//  	  } else
+//  	  {
+//  	      if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//  	      {
+//  	          if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+//  	          {
+//  	            Error_Handler();
+//  	          }
+//            }
+//        }
+//    }
+    if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
     {
-        if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
-        {
-          Error_Handler();
+  	  if(UART_DMA)
+  	  {
+            if(HAL_UART_Transmit_DMA(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+            {
+              Error_Handler();
+            }
+  	  } else
+  	  {
+            if(HAL_UART_Transmit(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+            {
+              Error_Handler();
+            }
         }
-    } else
-    {
-        if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
-        {
-          Error_Handler();
-        }
-    }
-
-
-//    while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
-    {
     }
 }
 
@@ -307,8 +276,17 @@ void print_binary(int v, int num_places  )
   const uint32_t uint32_data_number = num_places;
   uint32_t uint32_data_number_written;
 //  uint8_t dataBuffer[uint8_data_number];
-  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//  {
+//	  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//	  {
+//	  }
+//  }
+  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
+	  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+	  {
+	  }
   }
     int mask=0, n;
 
@@ -338,17 +316,39 @@ void print_binary(int v, int num_places  )
 //            Serial.print("_");
         }
     }
-    if(UART_DMA)
+//    if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//    {
+//  	  if(UART_DMA)
+//  	  {
+//            if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+//            {
+//              Error_Handler();
+//            }
+//  	  } else
+//  	  {
+//  	      if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//  	      {
+//  	          if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+//  	          {
+//  	            Error_Handler();
+//  	          }
+//            }
+//        }
+//    }
+    if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
     {
-        if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
-        {
-          Error_Handler();
-        }
-    } else
-    {
-        if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
-        {
-          Error_Handler();
+  	  if(UART_DMA)
+  	  {
+            if(HAL_UART_Transmit_DMA(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+            {
+              Error_Handler();
+            }
+  	  } else
+  	  {
+            if(HAL_UART_Transmit(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+            {
+              Error_Handler();
+            }
         }
     }
 //    HAL_UART_Transmit_DMA(&huart1, dataBuffer, uint8_data_number);
@@ -365,24 +365,55 @@ void print_symbol(uint8_t v)
   const uint32_t uint32_data_number = 1;
   uint32_t uint32_data_number_written;
 //  uint8_t dataBuffer[uint8_data_number];
-  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//  {
+//	  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//	  {
+//	  }
+//  }
+  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
+	  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+	  {
+	  }
   }
   dataBuffer_print[ 0 ] = v;
 //  HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer, uint8_data_number);
 //  HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer, uint8_data_number, 5000);
 //  HAL_UART_Transmit_IT(&huart1, (uint8_t*)dataBuffer, uint8_data_number);
-  if(UART_DMA)
+//  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//  {
+//	  if(UART_DMA)
+//	  {
+//          if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+//          {
+//            Error_Handler();
+//          }
+//	  } else
+//	  {
+//	      if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//	      {
+//	          if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+//	          {
+//	            Error_Handler();
+//	          }
+//          }
+//      }
+//  }
+  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
-      if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
-      {
-        Error_Handler();
-      }
-  } else
-  {
-      if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
-      {
-        Error_Handler();
+	  if(UART_DMA)
+	  {
+          if(HAL_UART_Transmit_DMA(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+          {
+            Error_Handler();
+          }
+	  } else
+	  {
+          if(HAL_UART_Transmit(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+          {
+            Error_Handler();
+          }
       }
   }
 
@@ -398,6 +429,18 @@ void print_text(const char * t)
   const uint32_t uint32_data_number = text_length;
   uint32_t uint32_data_number_written;
 //  uint8_t dataBuffer[uint8_data_number];
+//  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//  {
+//	  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//	  {
+//	  }
+//  }
+  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
+  {
+	  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+	  {
+	  }
+  }
   for (int n=0; n<text_length; n++)
   {
 //	  dataBuffer[n] = (uint8_t)(t[n]);
@@ -406,53 +449,98 @@ void print_text(const char * t)
 //  HAL_UART_Transmit_DMA(&huart1, dataBuffer, uint8_data_number);
 //  HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer, uint8_data_number, 5000);
 //  HAL_UART_Transmit_IT(&huart1, (uint8_t*)dataBuffer, uint8_data_number);
-  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//  {
+//	  if(UART_DMA)
+//	  {
+//          if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+//          {
+//            Error_Handler();
+//          }
+//	  } else
+//	  {
+//	      if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//	      {
+//	          if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+//	          {
+//	            Error_Handler();
+//	          }
+//          }
+//      }
+//  }
+  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
-  }
-  if(UART_DMA)
-  {
-//      if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer, uint8_data_number) != HAL_OK)
-      if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
-      {
-        Error_Handler();
-      }
-  } else
-  {
-//      if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer, uint8_data_number,5000) != HAL_OK)
-      if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
-      {
-        Error_Handler();
+	  if(UART_DMA)
+	  {
+          if(HAL_UART_Transmit_DMA(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+          {
+            Error_Handler();
+          }
+	  } else
+	  {
+          if(HAL_UART_Transmit(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+          {
+            Error_Handler();
+          }
       }
   }
 
 
-  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
-  {
-  }
 }
 
 void print_line()
 {
   const uint32_t uint32_data_number = 2;
   uint32_t uint32_data_number_written;
-  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//  {
+//	  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//	  {
+//	  }
+//  }
+  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
+	  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+	  {
+	  }
   }
   dataBuffer_print[ 0 ] = '\r';
   dataBuffer_print[ 1 ] = '\n';
   //    HAL_UART_Transmit_DMA(&huart1, dataBuffer, uint8_data_number);
 //      HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer, uint8_data_number, 5000);
-  if(UART_DMA)
+//  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//  {
+//	  if(UART_DMA)
+//	  {
+//          if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+//          {
+//            Error_Handler();
+//          }
+//	  } else
+//	  {
+//	      if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//	      {
+//	          if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+//	          {
+//	            Error_Handler();
+//	          }
+//          }
+//      }
+//  }
+  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
-      if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
-      {
-        Error_Handler();
-      }
-  } else
-  {
-      if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
-      {
-        Error_Handler();
+	  if(UART_DMA)
+	  {
+          if(HAL_UART_Transmit_DMA(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number) != HAL_OK)
+          {
+            Error_Handler();
+          }
+	  } else
+	  {
+          if(HAL_UART_Transmit(&huart2, (uint8_t*)dataBuffer_print, uint32_data_number,5000) != HAL_OK)
+          {
+            Error_Handler();
+          }
       }
   }
 
@@ -500,9 +588,6 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_SPI1_Init();
-  MX_USART1_UART_Init();
-  MX_I2C1_Init();
-  MX_I2C2_Init();
   MX_SPI2_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
@@ -549,9 +634,12 @@ int main(void)
     }
   }
 
-  ads131m0x_dev *device1;
+  ads131m0x_dev *device1 = NULL;
   ads131m0x_init_param init_param;
   uint8_t i;
+//  init_param.spi_dev.dev = &hspi2;
+//  init_param.spi_dev.chip_select_port = SPI2_NSS_GPIO_Port;
+//  init_param.spi_dev.chip_select_pin = SPI2_NSS_Pin;
   init_param.spi_dev.dev = &hspi1;
   init_param.spi_dev.chip_select_port = SPI1_NSS_GPIO_Port;
   init_param.spi_dev.chip_select_pin = SPI1_NSS_Pin;
@@ -563,16 +651,22 @@ int main(void)
 
   if(uint8_ad_adc_number >= 2)
   {
-	  ads131m0x_dev *device2;
+	  ads131m0x_dev *device2 = NULL;
 	  ads131m0x_init_param init_param2 = init_param;
 
 //    init_param2.spi_dev.dev = &hspi4;
 //      init_param2.spi_dev.dev = &hspi3;
 //      init_param2.spi_dev.dev = &hspi2;
 //    init_param2.spi_dev.dev = &hspi1;
-      init_param2.spi_dev.dev = &hspi1;
-  init_param2.spi_dev.chip_select_port = SPI1_NSS2_GPIO_Port;
-  init_param2.spi_dev.chip_select_pin = SPI1_NSS2_Pin;
+//      init_param2.spi_dev.dev = &hspi1;
+//      init_param2.spi_dev.chip_select_port = SPI1_NSS_GPIO_Port;
+//      init_param2.spi_dev.chip_select_pin = SPI1_NSS_Pin;
+      init_param2.spi_dev.dev = &hspi2;
+      init_param2.spi_dev.chip_select_port = SPI2_NSS_GPIO_Port;
+      init_param2.spi_dev.chip_select_pin = SPI2_NSS_Pin;
+//  init_param2.spi_dev.dev = &hspi1;
+//init_param2.spi_dev.chip_select_port = SPI1_NSS2_GPIO_Port;
+//init_param2.spi_dev.chip_select_pin = SPI1_NSS2_Pin;
 //      init_param2.spi_dev.chip_select_port = SPI2_NSS_AD2_GPIO_Port;
 //      init_param2.spi_dev.chip_select_pin = SPI2_NSS_AD2_Pin;
 //  //    init_param2.spi_dev.dev = &hspi3;
@@ -628,7 +722,11 @@ int main(void)
 
 //            readData(devices[ad_adc], &DataStruct);
 
-              if(data_counter%250==0)
+//                if(data_counter%4000==0)
+//                if(data_counter%16000==0)
+                if(data_counter%42==0)
+//                    if(data_counter%84==0)
+//                if(data_counter%250==0)
   //        if(test_counter%10000<5000)
               {
                   print_hex(data_counter1-data_counter2, 32);
@@ -672,19 +770,19 @@ int main(void)
               			& ~GAIN1_PGAGAIN2_MASK
               			& ~GAIN1_PGAGAIN1_MASK
               			& ~GAIN1_PGAGAIN0_MASK)
-                  		| GAIN1_PGAGAIN3_128
-              			| GAIN1_PGAGAIN2_128
-              			| GAIN1_PGAGAIN1_128
-              			| GAIN1_PGAGAIN0_128);
+                  		| GAIN1_PGAGAIN3_32
+              			| GAIN1_PGAGAIN2_32
+              			| GAIN1_PGAGAIN1_32
+              			| GAIN1_PGAGAIN0_32);
                   writeSingleRegister(devices[ad_adc], GAIN2_ADDRESS, (GAIN2_DEFAULT
                   		& ~GAIN2_PGAGAIN7_MASK
               			& ~GAIN2_PGAGAIN6_MASK
               			& ~GAIN2_PGAGAIN5_MASK
               			& ~GAIN2_PGAGAIN4_MASK)
-                  		| GAIN2_PGAGAIN7_128
-              			| GAIN2_PGAGAIN6_128
-              			| GAIN2_PGAGAIN5_128
-              			| GAIN2_PGAGAIN4_128);
+                  		| GAIN2_PGAGAIN7_32
+              			| GAIN2_PGAGAIN6_32
+              			| GAIN2_PGAGAIN5_32
+              			| GAIN2_PGAGAIN4_32);
 
                   writeSingleRegister(devices[ad_adc], CH0_CFG_ADDRESS, (CH0_CFG_DEFAULT & ~CH0_CFG_MUX0_MASK) | CH0_CFG_MUX0_ADC_INPUT_SHORT);
                   writeSingleRegister(devices[ad_adc], CH1_CFG_ADDRESS, (CH1_CFG_DEFAULT & ~CH1_CFG_MUX1_MASK) | CH1_CFG_MUX1_ADC_INPUT_SHORT);
@@ -1211,6 +1309,18 @@ int main(void)
 //            const uint32_t uint8_data_number = 2 + 1 * 3 * 1 + 0 * 2 + 1;
 //              const uint32_t uint8_data_number = 2 + uint8_ad_chan_number * 3 * 4 + uint8_accel_chan_number * 2 + 1;
 
+//    	  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//    	  {
+//    		  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//    		  {
+//    		  }
+//    	  }
+    	  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
+    	  {
+    		  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+    		  {
+    		  }
+    	  }
           const uint32_t uint8_data_number = 2 + uint8_ad_chan_number * uint8_ad_adc_data_bytes_number * (uint8_ad_adc_number) + uint8_accel_chan_number * 2 + 1;
 //            const uint32_t uint8_data_number = 2 + uint8_ad_chan_number * 3 * (uint8_ad_adc_number) + uint8_accel_chan_number * 2 + 1;
 //          uint8_t dataBuffer[uint8_data_number];
@@ -1253,25 +1363,38 @@ int main(void)
 //            dataBuffer[2 + uint8_ad_chan_number * 3 * 4 + uint8_accel_chan_number * 2 + 0] = 0xC0;
           dataBuffer_print[2 + uint8_ad_chan_number * uint8_ad_adc_data_bytes_number * (uint8_ad_adc_number) + uint8_accel_chan_number * 2 + 0] = 0xC0;
 
-                    if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
-                    {
-                        while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
-                        {
-                        }
-                        if(UART_DMA)
-                        {
-                            if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint8_data_number) != HAL_OK)
-                            {
-                              Error_Handler();
-                            }
-                        } else
-                        {
-                            if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint8_data_number,5000) != HAL_OK)
-                            {
-                              Error_Handler();
-                            }
-                        }
-                    }
+//          if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
+//          {
+//              if(UART_DMA)
+//              {
+//                  if(HAL_UART_Transmit_DMA(&huart1, (uint8_t*)dataBuffer_print, uint8_data_number) != HAL_OK)
+//                  {
+//                    Error_Handler();
+//                  }
+//              } else
+//              {
+//                  if(HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer_print, uint8_data_number,5000) != HAL_OK)
+//                  {
+//                    Error_Handler();
+//                  }
+//              }
+//          }
+          if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
+          {
+              if(UART_DMA)
+              {
+                  if(HAL_UART_Transmit_DMA(&huart2, (uint8_t*)dataBuffer_print, uint8_data_number) != HAL_OK)
+                  {
+                    Error_Handler();
+                  }
+              } else
+              {
+                  if(HAL_UART_Transmit(&huart2, (uint8_t*)dataBuffer_print, uint8_data_number,5000) != HAL_OK)
+                  {
+                    Error_Handler();
+                  }
+              }
+          }
       }
 
 
@@ -1318,74 +1441,6 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   HAL_RCC_MCOConfig(RCC_MCO, RCC_MCO1SOURCE_HSE, RCC_MCODIV_1);
-}
-
-/**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C1_Init(void)
-{
-
-  /* USER CODE BEGIN I2C1_Init 0 */
-
-  /* USER CODE END I2C1_Init 0 */
-
-  /* USER CODE BEGIN I2C1_Init 1 */
-
-  /* USER CODE END I2C1_Init 1 */
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN I2C1_Init 2 */
-
-  /* USER CODE END I2C1_Init 2 */
-
-}
-
-/**
-  * @brief I2C2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C2_Init(void)
-{
-
-  /* USER CODE BEGIN I2C2_Init 0 */
-
-  /* USER CODE END I2C2_Init 0 */
-
-  /* USER CODE BEGIN I2C2_Init 1 */
-
-  /* USER CODE END I2C2_Init 1 */
-  hi2c2.Instance = I2C2;
-  hi2c2.Init.ClockSpeed = 100000;
-  hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c2.Init.OwnAddress1 = 0;
-  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c2.Init.OwnAddress2 = 0;
-  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN I2C2_Init 2 */
-
-  /* USER CODE END I2C2_Init 2 */
-
 }
 
 /**
@@ -1447,9 +1502,9 @@ static void MX_SPI2_Init(void)
   hspi2.Init.Direction = SPI_DIRECTION_2LINES;
   hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi2.Init.NSS = SPI_NSS_HARD_OUTPUT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi2.Init.CLKPhase = SPI_PHASE_2EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -1461,39 +1516,6 @@ static void MX_SPI2_Init(void)
   /* USER CODE BEGIN SPI2_Init 2 */
 
   /* USER CODE END SPI2_Init 2 */
-
-}
-
-/**
-  * @brief USART1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART1_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART1_Init 0 */
-
-  /* USER CODE END USART1_Init 0 */
-
-  /* USER CODE BEGIN USART1_Init 1 */
-
-  /* USER CODE END USART1_Init 1 */
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART1_Init 2 */
-
-  /* USER CODE END USART1_Init 2 */
 
 }
 
@@ -1576,36 +1598,27 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, ADC1_SYNC_RESET_Pin|SPI1_NSS2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(ADC1_SYNC_RESET_GPIO_Port, ADC1_SYNC_RESET_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : SPI1_NSS_Pin */
   GPIO_InitStruct.Pin = SPI1_NSS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(SPI1_NSS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : ADC1_SYNC_RESET_Pin SPI1_NSS2_Pin */
-  GPIO_InitStruct.Pin = ADC1_SYNC_RESET_Pin|SPI1_NSS2_Pin;
+  /*Configure GPIO pin : ADC1_SYNC_RESET_Pin */
+  GPIO_InitStruct.Pin = ADC1_SYNC_RESET_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : BOOT1_Pin */
-  GPIO_InitStruct.Pin = BOOT1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA8 */
-  GPIO_InitStruct.Pin = GPIO_PIN_8;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(ADC1_SYNC_RESET_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : ADC1_DRDY_Pin */
   GPIO_InitStruct.Pin = ADC1_DRDY_Pin;
@@ -1613,9 +1626,28 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(ADC1_DRDY_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : BOOT1_Pin */
+  GPIO_InitStruct.Pin = BOOT1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SPI2_NSS_Pin */
+  GPIO_InitStruct.Pin = SPI2_NSS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(SPI2_NSS_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA8 */
+  GPIO_InitStruct.Pin = GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
 }
 

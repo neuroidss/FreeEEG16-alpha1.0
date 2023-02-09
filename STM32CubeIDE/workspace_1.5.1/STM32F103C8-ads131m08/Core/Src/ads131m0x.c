@@ -128,19 +128,27 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
 
 	/* (OPTIONAL) Define your initial register settings here */
 //    writeSingleRegister(dev, CLOCK_ADDRESS, (CLOCK_DEFAULT & ~CLOCK_OSR_MASK) | CLOCK_OSR_256);
-    writeSingleRegister(dev, CLOCK_ADDRESS, (CLOCK_DEFAULT
-    		& ~CLOCK_OSR_MASK
-			& ~CLOCK_XTAL_DIS_MASK
-			& ~CLOCK_EXTREF_EN_MASK
-			& ~CLOCK_PWR_MASK)
-//    		| CLOCK_OSR_4096
-//    		| CLOCK_OSR_8192
-    		| CLOCK_OSR_16384
-//			| CLOCK_XTAL_DIS_DISABLED
-			| CLOCK_XTAL_DIS_ENABLED
-//			| CLOCK_EXTREF_EN_ENABLED
-			| CLOCK_EXTREF_EN_DISABLED
-			| CLOCK_PWR_HR);
+//    if(0)
+    {
+        writeSingleRegister(dev, CLOCK_ADDRESS, (CLOCK_DEFAULT
+        		& ~CLOCK_OSR_MASK
+    			& ~CLOCK_XTAL_DIS_MASK
+    			& ~CLOCK_EXTREF_EN_MASK
+    			& ~CLOCK_PWR_MASK)
+    //    		| CLOCK_OSR_256
+//    			| CLOCK_OSR_1024
+    //    		| CLOCK_OSR_4096
+    //    		| CLOCK_OSR_8192
+        		| CLOCK_OSR_16384
+    //			| CLOCK_XTAL_DIS_DISABLED
+    			| CLOCK_XTAL_DIS_ENABLED
+//    			| CLOCK_EXTREF_EN_ENABLED
+    			| CLOCK_EXTREF_EN_DISABLED
+    			| CLOCK_PWR_HR
+    //			| CLOCK_PWR_LP
+    //			| CLOCK_PWR_VLP
+    			);
+    }
     if(0)
     {
         writeSingleRegister(dev, GAIN1_ADDRESS, (GAIN1_DEFAULT
@@ -1259,7 +1267,7 @@ uint8_t getWordByteLength(ads131m0x_dev *dev)
 int32_t ads131m0x_setup(ads131m0x_dev **device,
 		ads131m0x_init_param init_param)
 {
-	ads131m0x_dev *dev;
+	ads131m0x_dev *dev = NULL;
 	uint8_t i;
 	int32_t ret;
 

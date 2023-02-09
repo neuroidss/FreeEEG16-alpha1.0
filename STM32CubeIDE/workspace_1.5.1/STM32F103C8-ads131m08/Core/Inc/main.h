@@ -62,14 +62,21 @@ void Error_Handler(void);
 #define SPI1_NSS_GPIO_Port GPIOA
 #define ADC1_SYNC_RESET_Pin GPIO_PIN_0
 #define ADC1_SYNC_RESET_GPIO_Port GPIOB
-#define SPI1_NSS2_Pin GPIO_PIN_1
-#define SPI1_NSS2_GPIO_Port GPIOB
+#define ADC1_DRDY_Pin GPIO_PIN_1
+#define ADC1_DRDY_GPIO_Port GPIOB
+#define ADC1_DRDY_EXTI_IRQn EXTI1_IRQn
 #define BOOT1_Pin GPIO_PIN_2
 #define BOOT1_GPIO_Port GPIOB
-#define ADC1_DRDY_Pin GPIO_PIN_5
-#define ADC1_DRDY_GPIO_Port GPIOB
-#define ADC1_DRDY_EXTI_IRQn EXTI9_5_IRQn
+#define SPI2_NSS_Pin GPIO_PIN_12
+#define SPI2_NSS_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+
+#define SPI1_NSS_Pin GPIO_PIN_4
+#define SPI1_NSS_GPIO_Port GPIOA
+#define SPI2_NSS_Pin GPIO_PIN_12
+#define SPI2_NSS_GPIO_Port GPIOB
+//#define SPI1_NSS2_Pin GPIO_PIN_1
+//#define SPI1_NSS2_GPIO_Port GPIOB
 
 #define FREEEEG16_TEST_COUNTER              (1LL<<4)
 #define FREEEEG16_ADS131M08_SPI_TEST_INT (1LL<<5)
@@ -94,13 +101,14 @@ void Error_Handler(void);
 
 #define FREESMARTEEG_SEND_UART1  (1<<0)
 #define FREESMARTEEG_SEND_UART2  (1<<1)
-#define FREESMARTEEG_SEND FREESMARTEEG_SEND_UART1
+//#define FREESMARTEEG_SEND FREESMARTEEG_SEND_UART1
+#define FREESMARTEEG_SEND FREESMARTEEG_SEND_UART2
 
 #define UART_DMA (1)
 //#define UART_DMA (0)
 
-//#define SPI_DMA (1)
-#define SPI_DMA (0)
+#define SPI_DMA (1)
+//#define SPI_DMA (0)
 
 #define SPI_NSS_SOFTWARE (1)
 //#define SPI_NSS_SOFTWARE (0)
