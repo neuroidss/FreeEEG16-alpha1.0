@@ -142,7 +142,13 @@ void loop() {
 //        pTxCharacteristic->notify();
 //        txValue++;
 //		delay(10); // bluetooth stack will go into congestion, if too many packets are sent
-	}
+	  } else
+    {
+        if (Serial1.available()) {
+            auto count = Serial1.readBytes(serialReadBuffer, DATA_SIZE);
+            Serial.write(serialReadBuffer, count);
+        }
+    }
 
     // disconnecting
     if (!deviceConnected && oldDeviceConnected) {
