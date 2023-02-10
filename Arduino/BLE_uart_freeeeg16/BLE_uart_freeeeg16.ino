@@ -41,7 +41,8 @@ uint8_t txValue = 0;
 uint8_t unitMACAddress[6];  // Use MAC address in BT broadcast and display
 char deviceName[20];        // The serial string that is broadcast.
 
-#define DATA_SIZE 57    // 26 bytes is a lower than RX FIFO size (127 bytes) 
+#define DATA_SIZE 512    // 26 bytes is a lower than RX FIFO size (127 bytes) 
+//#define DATA_SIZE 57    // 26 bytes is a lower than RX FIFO size (127 bytes) 
 #define BAUD 115200       // Any baudrate from 300 to 115200
 #define TEST_UART 1     // Serial1 will be used for the loopback testing with different RX FIFO FULL values
 #define RXPIN 2         // GPIO 4 => RX for Serial1
