@@ -43,7 +43,8 @@ char deviceName[20];        // The serial string that is broadcast.
 
 #define DATA_SIZE 512    // 26 bytes is a lower than RX FIFO size (127 bytes) 
 //#define DATA_SIZE 57    // 26 bytes is a lower than RX FIFO size (127 bytes) 
-#define BAUD 115200       // Any baudrate from 300 to 115200
+#define BAUD 921600       // Any baudrate from 300 to 115200
+//#define BAUD 115200       // Any baudrate from 300 to 115200
 #define TEST_UART 1     // Serial1 will be used for the loopback testing with different RX FIFO FULL values
 #define RXPIN 2         // GPIO 4 => RX for Serial1
 #define TXPIN 3         // GPIO 5 => TX for Serial1
@@ -84,7 +85,8 @@ void setup() {
   // GPIO4 <--> GPIO5 using external wire
   Serial1.begin(BAUD, SERIAL_8N1, RXPIN, TXPIN); // Rx = 4, Tx = 5 will work for ESP32, S2, S3 and C3
 
-  Serial.begin(115200);
+//  Serial.begin(115200);
+  Serial.begin(921600);
 
   esp_read_mac(unitMACAddress, ESP_MAC_WIFI_STA);
   

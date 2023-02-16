@@ -25,7 +25,8 @@ WiFiMulti wifiMulti;
 
 //how many clients should be able to telnet to this ESP32
 #define MAX_SRV_CLIENTS 1
-#define BAUD 115200       // Any baudrate from 300 to 115200
+#define BAUD 921600       // Any baudrate from 300 to 115200
+//#define BAUD 115200       // Any baudrate from 300 to 115200
 #define TEST_UART 1     // Serial1 will be used for the loopback testing with different RX FIFO FULL values
 #define RXPIN 2         // GPIO 4 => RX for Serial1
 #define TXPIN 3         // GPIO 5 => TX for Serial1
@@ -36,7 +37,8 @@ WiFiServer server(23);
 WiFiClient serverClients[MAX_SRV_CLIENTS];
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(921600);
+//  Serial.begin(115200);
   Serial.println("\nConnecting");
 
   wifiMulti.addAP(ssid, password);
