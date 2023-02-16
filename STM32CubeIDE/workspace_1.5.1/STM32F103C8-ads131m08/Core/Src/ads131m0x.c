@@ -140,7 +140,7 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
     //    		| CLOCK_OSR_4096
     //    		| CLOCK_OSR_8192
         		| CLOCK_OSR_16384
-    //			| CLOCK_XTAL_DIS_DISABLED
+//    			| CLOCK_XTAL_DIS_DISABLED
     			| CLOCK_XTAL_DIS_ENABLED
 //    			| CLOCK_EXTREF_EN_ENABLED
     			| CLOCK_EXTREF_EN_DISABLED
@@ -259,7 +259,7 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
     	| GAIN2_PGAGAIN4_128);
     }
 
-//    if(0)
+    if(0)
     {
         writeSingleRegister(dev, CFG_ADDRESS, (CFG_DEFAULT
         		& ~CFG_GC_EN_MASK

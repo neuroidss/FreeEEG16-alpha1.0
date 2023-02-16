@@ -55,9 +55,11 @@ DMA_HandleTypeDef hdma_spi1_tx;
 DMA_HandleTypeDef hdma_spi2_rx;
 DMA_HandleTypeDef hdma_spi2_tx;
 
+UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-DMA_HandleTypeDef hdma_usart2_rx;
+UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart2_tx;
+DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
 
@@ -99,12 +101,39 @@ uint32_t ui32SampleNumber=-1;
 
 //const uint8_t uint8_data_number_print = 200;
 //const uint8_t uint8_data_number_print2 = 200;
-#define uint8_data_number_print  1300
+#define uint8_data_number_print  8192
 uint8_t dataBuffer_print[uint8_data_number_print];
 
 char buff[256];
 
 bool flag_nDRDY_INTERRUPT = false;
+
+#define uint8_data_number_read  100
+uint16_t currentValueCNDTR;
+uint8_t dataBuffer_read[uint8_data_number_read];
+bool flag_UART_RxCplt = false;
+
+bool config_dev = false;
+bool config_address = false;
+bool config_data = false;
+
+bool config_EOL;
+bool config_space;
+bool config_number;
+bool config_binary_number;
+bool config_hex_number;
+bool config_semi;
+bool config_close = true;
+bool config_open = false;
+
+uint32_t uint32_tmp_config;
+
+typedef struct Data_writeSingleRegister {
+	ads131m0x_dev *dev;
+	uint8_t address;
+	uint16_t data;
+} Data_writeSingleRegister;
+Data_writeSingleRegister data_writeSingleRegister;
 
 /* USER CODE END PV */
 
@@ -115,6 +144,8 @@ static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_USART1_UART_Init(void);
+static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 void print_hex(int v, int num_places);
@@ -590,6 +621,8 @@ int main(void)
   MX_SPI1_Init();
   MX_SPI2_Init();
   MX_USART2_UART_Init();
+  MX_USART1_UART_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
   if((FREEEEG16_OUT & FREEEEG16_TEST_COUNTER))
@@ -696,6 +729,52 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
+  if(FREEEEG16_IN & FREEEEG16_ADS131M08_SPI_OPENVIBE_FREEEEG16_CONFIG_INT)
+  {
+	    flag_UART_RxCplt = false;
+
+        if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART1)
+      {
+          if(UART_DMA)
+          {
+      	    /* Disable Half Transfer Interrupt */
+      	    __HAL_DMA_DISABLE_IT(huart1.hdmarx, DMA_IT_HT);
+              if(HAL_UART_Receive_DMA(&huart1, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+//                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+              {
+                Error_Handler();
+              }
+          } else
+          {
+//                if(HAL_UART_Receive(&huart2, (uint8_t*)dataBuffer_read, 1,5000) != HAL_OK)
+              if(HAL_UART_Receive_IT(&huart1, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+              {
+                Error_Handler();
+              }
+          }
+      }
+        if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART2)
+      {
+          if(UART_DMA)
+          {
+      	    /* Disable Half Transfer Interrupt */
+      	    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
+              if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+//                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+              {
+                Error_Handler();
+              }
+          } else
+          {
+//                if(HAL_UART_Receive(&huart2, (uint8_t*)dataBuffer_read, 1,5000) != HAL_OK)
+              if(HAL_UART_Receive_IT(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+              {
+                Error_Handler();
+              }
+          }
+      }
+  }//FREEEEG16_IN & FREEEEG16_ADS131M08_SPI_OPENVIBE_FREEEEG16_CONFIG_INT
+
   long data_counter=0;
   long data_counter1=0;
   long data_counter2=0;
@@ -710,7 +789,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-      if(FREEEEG16_OUT & FREEEEG16_ADS131M08_SPI_TEST_INT)
+      if(FREEEEG16_OUT & FREEEEG16_ADS131M08_SPI_TEST_SAMPLE_COUNT_INT)
       {
           if(flag_nDRDY_INTERRUPT)
           {
@@ -724,8 +803,9 @@ int main(void)
 
 //                if(data_counter%4000==0)
 //                if(data_counter%16000==0)
-                if(data_counter%42==0)
+//                if(data_counter%42==0)
 //                    if(data_counter%84==0)
+                if(data_counter%125==0)
 //                if(data_counter%250==0)
   //        if(test_counter%10000<5000)
               {
@@ -743,7 +823,7 @@ int main(void)
               data_counter++;
           }
           data_counter1++;
-      }
+      }//FREEEEG16_OUT & FREEEEG16_ADS131M08_SPI_TEST_SAMPLE_COUNT_INT
 
       if(FREEEEG16_OUT & FREEEEG16_ADS131M08_SPI_TEST_REGISTERS_INT)
       {
@@ -1400,6 +1480,162 @@ int main(void)
 
     }//FREEEEG32_OUT & FREEEEG32_ADS131M08_SPI_OPENVIBE_FREEEEG32_CUSTOM_INT
 
+    if(FREEEEG16_IN & FREEEEG16_ADS131M08_SPI_OPENVIBE_FREEEEG16_CONFIG_INT)
+  	if(flag_UART_RxCplt)
+    {
+  	    flag_UART_RxCplt = false;
+
+  	    for(uint16_t indexValueCNDTR = 0; indexValueCNDTR < uint8_data_number_read-currentValueCNDTR; indexValueCNDTR++)
+  	    {
+  	  	    if(dataBuffer_read[indexValueCNDTR] == 13)
+  	  	    {
+  	  	    	config_EOL = true;
+  	  	    }
+  	  	    else if(dataBuffer_read[indexValueCNDTR] == ' ')
+  	  	    {
+  	  	    	config_space = true;
+  	  	    }
+  	  	    else if(dataBuffer_read[indexValueCNDTR] == '[')
+  	  	    {
+  	  	    	if((!config_open) && (config_close))
+  	  	    	{
+  	  	  	    	config_close = false;
+  	  	  	    	config_open = true;
+  	  		    	config_dev = true;
+  	  		    	uint32_tmp_config = 0;
+  	  	 	    	config_binary_number = false;
+  	  	 	    	config_hex_number = false;
+  	  	    	}
+  	  	    }
+  	  	    else if(dataBuffer_read[indexValueCNDTR] == ']')
+  	  	    {
+  	  	    	if(config_open)
+  	  	    	{
+  	  	  	    	if(config_data)
+  	  	  	    	{
+  	  	  	  	    	data_writeSingleRegister.data = uint32_tmp_config;
+  	  	  	  	        config_data = false;
+  	  	                writeSingleRegister(data_writeSingleRegister.dev, data_writeSingleRegister.address, data_writeSingleRegister.data);
+  	  	  	    	}
+  	  	  	    	config_close = true;
+  	  	  	    	config_open = false;
+  	  	    	}
+  	  	    }
+  	  	    else if(((dataBuffer_read[indexValueCNDTR] >= '0') && (dataBuffer_read[indexValueCNDTR] <= '9')) ||
+  	  	    		(config_hex_number &&
+  	  	    				(((dataBuffer_read[indexValueCNDTR] >= 'a') && (dataBuffer_read[indexValueCNDTR] <= 'f')) ||
+  	  	    						((dataBuffer_read[indexValueCNDTR] >= 'A') && (dataBuffer_read[indexValueCNDTR] <= 'F')))))
+  	  	    {
+  	  	    	if(config_open)
+  	  	    	{
+  	  	  	    	config_number = true;
+  	  		  	    if(config_binary_number)
+  	  		  	    {
+  	  		  	    	uint32_tmp_config = uint32_tmp_config * 2;
+  	  	  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'0';
+  	  		  	    }
+  	  		  	    else if(config_hex_number)
+  	  		  	    {
+  	  		  	    	uint32_tmp_config = uint32_tmp_config * 16;
+  	  		  	        if((dataBuffer_read[indexValueCNDTR] >= 'a') && (dataBuffer_read[indexValueCNDTR] <= 'f'))
+  	  		  	        {
+  	  		  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'a';
+  	  		  	        }
+  	  		  	        else if((dataBuffer_read[indexValueCNDTR] >= 'A') && (dataBuffer_read[indexValueCNDTR] <= 'F'))
+  	  		  	        {
+  	  		  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'A';
+  	  		  	        }
+  	  		  	        else
+  	  		  	        {
+  	  		  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'0';
+  	  		  	        }
+  	  		  	    }
+  	  		  	    else
+  	  		  	    {
+  	  		  	    	uint32_tmp_config = uint32_tmp_config * 10;
+  	  	  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'0';
+  	  		  	    }
+  	  	    	}
+  	  	    }
+  	  	    else if((dataBuffer_read[indexValueCNDTR] == 'b') || (dataBuffer_read[indexValueCNDTR] == 'B'))
+  	  	    {
+  	  	    	if(config_open)
+  	  	    	{
+  	  	    		if(!config_hex_number)
+  	  	    		{
+  	  	  	  	    	config_binary_number = true;
+  	  	    		}
+  	  	    	}
+  	  	    }
+  	  	    else if(dataBuffer_read[indexValueCNDTR] == 'x')
+  	  	    {
+  	  	    	if(config_open)
+  	  	    	{
+  	  	  	    	config_hex_number = true;
+  	  	    	}
+  	  	    }
+  	  	    else if(dataBuffer_read[indexValueCNDTR] == ',')
+  	  	    {
+  	  	    	if(config_open)
+  	  	    	{
+  	  	  	    	if(config_address)
+  	  	  	    	{
+  	  	  	  	    	data_writeSingleRegister.address = uint32_tmp_config;
+  	  	  		    	config_address = false;
+  	  	  		    	config_data = true;
+  	  	  	    	}
+  	  	  	    	if(config_dev)
+  	  	  	    	{
+  	  	  	  	    	data_writeSingleRegister.dev = devices[uint32_tmp_config];
+  	  	  		    	config_dev = false;
+  	  	  		    	config_address = true;
+  	  	  	    	}
+  	  	  	    	config_semi = true;
+  	  		    	uint32_tmp_config = 0;
+  	  	 	    	config_binary_number = false;
+  	  	 	    	config_hex_number = false;
+  	  	    	}
+  	  	    }
+  	    }
+
+        if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART1)
+        {
+            if(UART_DMA)
+            {
+                if(HAL_UART_Receive_DMA(&huart1, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+//                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                {
+                  Error_Handler();
+                }
+            } else
+            {
+//                if(HAL_UART_Receive(&huart2, (uint8_t*)dataBuffer_read, 1,5000) != HAL_OK)
+                if(HAL_UART_Receive_IT(&huart1, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                {
+                  Error_Handler();
+                }
+            }
+        }
+        if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART2)
+        {
+            if(UART_DMA)
+            {
+                if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+//                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                {
+                  Error_Handler();
+                }
+            } else
+            {
+//                if(HAL_UART_Receive(&huart2, (uint8_t*)dataBuffer_read, 1,5000) != HAL_OK)
+                if(HAL_UART_Receive_IT(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                {
+                  Error_Handler();
+                }
+            }
+        }
+    }//FREEEEG16_IN & FREEEEG16_ADS131M08_SPI_OPENVIBE_FREEEEG16_CONFIG_INT
+
   }
   /* USER CODE END 3 */
 }
@@ -1417,7 +1653,7 @@ void SystemClock_Config(void)
   * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV2;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -1520,6 +1756,39 @@ static void MX_SPI2_Init(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -1535,7 +1804,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 921600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -1549,6 +1818,39 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART3_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART3_Init 0 */
+
+  /* USER CODE END USART3_Init 0 */
+
+  /* USER CODE BEGIN USART3_Init 1 */
+
+  /* USER CODE END USART3_Init 1 */
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 115200;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_NONE;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART3_Init 2 */
+
+  /* USER CODE END USART3_Init 2 */
 
 }
 
@@ -1662,6 +1964,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	  flag_nDRDY_INTERRUPT = true;
   }
 
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if(huart->Instance == USART1)
+//        if(huart->Instance == USART2)
+    {
+  	  flag_UART_RxCplt = true;
+  	  currentValueCNDTR = __HAL_DMA_GET_COUNTER(huart->hdmarx);
+    }
 }
 
 /* USER CODE END 4 */
