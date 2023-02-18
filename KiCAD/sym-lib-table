@@ -1,0 +1,7 @@
+(sym_lib_table
+  (lib (name "ads131")(type "KiCad")(uri "${KIPRJMOD}/libraries/ads131.kicad_sym")(options "")(descr ""))
+  (lib (name "Espressif")(type "KiCad")(uri "${KIPRJMOD}/libraries/Espressif.kicad_sym")(options "")(descr ""))
+  (lib (name "lp5907")(type "Legacy")(uri "${KIPRJMOD}/libraries/lp5907.lib")(options "")(descr ""))
+  (lib (name "ref2025")(type "KiCad")(uri "${KIPRJMOD}/libraries/ref2025.kicad_sym")(options "")(descr ""))
+  (lib (name "FreeEEG16-alpha-adc_mcu")(type "KiCad")(uri "${KIPRJMOD}/libraries/FreeEEG16-alpha-adc_mcu.kicad_sym")(options "")(descr ""))
+)

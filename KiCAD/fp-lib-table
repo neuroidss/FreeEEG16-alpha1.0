@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "freeeeg16")(type "KiCad")(uri "${KIPRJMOD}/freeeeg16.pretty")(options "")(descr ""))
+)
