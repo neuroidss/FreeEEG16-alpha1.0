@@ -40,6 +40,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+//#define ARRAY_LEN(x)            (sizeof(x) / sizeof((x)[0]))
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -64,6 +67,9 @@ DMA_HandleTypeDef hdma_usart2_tx;
 DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
+
+//uint8_t usart_rx_dma_buffer[64];
+//uint32_t old_pos=0;
 
 typedef struct ADData24 {
 	  uint8_t b0;
@@ -103,21 +109,26 @@ uint32_t ui32SampleNumber=-1;
 
 //const uint8_t uint8_data_number_print = 200;
 //const uint8_t uint8_data_number_print2 = 200;
-#define uint8_data_number_print  8192
+#define uint8_data_number_print  1024
+//#define uint8_data_number_print  8192
 uint8_t dataBuffer_print[uint8_data_number_print];
 
 char buff[256];
 
 bool flag_nDRDY_INTERRUPT = false;
 
-#define uint8_data_number_read  100
+#define uint8_data_number_read  1024
 uint16_t currentValueCNDTR;
+//uint16_t lastValueCNDTR=0;
+size_t old_pos=0;
+size_t pos;
 uint8_t dataBuffer_read[uint8_data_number_read];
 bool flag_UART_RxCplt = false;
 
 bool config_dev = false;
 bool config_address = false;
 bool config_data = false;
+bool config_command = false;
 
 bool config_EOL;
 bool config_space;
@@ -127,13 +138,16 @@ bool config_hex_number;
 bool config_semi;
 bool config_close = true;
 bool config_open = false;
+bool config_error = false;
 
 uint32_t uint32_tmp_config;
 
 typedef struct Data_writeSingleRegister {
 	ads131m0x_dev *dev;
+	uint8_t dev_number;
 	uint8_t address;
 	uint16_t data;
+	uint16_t command;
 } Data_writeSingleRegister;
 Data_writeSingleRegister data_writeSingleRegister;
 
@@ -162,6 +176,15 @@ void print_text_line(const char * t);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+HAL_UART_StateTypeDef HAL_UART_GetState_gState(UART_HandleTypeDef *huart)
+{
+  uint32_t temp1 = 0x00U, temp2 = 0x00U;
+  temp1 = huart->gState;
+//  temp2 = huart->RxState;
+
+  return (HAL_UART_StateTypeDef)(temp1 | temp2);
+}
 
 int32_t interpret24bitAsInt32( uint8_t * byteBuffer)
 {
@@ -195,7 +218,7 @@ void UART_Printf(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     vsnprintf(buff, sizeof(buff), fmt, args);
-//    while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//    while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
 //    {
 //    }
 //    HAL_UART_Transmit_DMA(&huart1, (uint8_t*)buff, strlen(buff));
@@ -219,13 +242,13 @@ void print_hex(int v, int num_places)
 //  uint8_t dataBuffer[uint8_data_number];
 //	  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
 //	  {
-//		  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//		  while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
 //		  {
 //		  }
 //	  }
 	  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
 	  {
-		  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+		  while (HAL_UART_GetState_gState(&huart2) != HAL_UART_STATE_READY)
 		  {
 		  }
 	  }
@@ -312,13 +335,13 @@ void print_binary(int v, int num_places  )
 //  uint8_t dataBuffer[uint8_data_number];
 //  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
 //  {
-//	  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//	  while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
 //	  {
 //	  }
 //  }
   if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
-	  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+	  while (HAL_UART_GetState_gState(&huart2) != HAL_UART_STATE_READY)
 	  {
 	  }
   }
@@ -388,7 +411,7 @@ void print_binary(int v, int num_places  )
 //    HAL_UART_Transmit_DMA(&huart1, dataBuffer, uint8_data_number);
 //    HAL_UART_Transmit(&huart1, (uint8_t*)dataBuffer, uint8_data_number, 5000);
 
-    //    while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+    //    while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
     {
     }
 }
@@ -401,13 +424,13 @@ void print_symbol(uint8_t v)
 //  uint8_t dataBuffer[uint8_data_number];
 //  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
 //  {
-//	  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//	  while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
 //	  {
 //	  }
 //  }
   if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
-	  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+	  while (HAL_UART_GetState_gState(&huart2) != HAL_UART_STATE_READY)
 	  {
 	  }
   }
@@ -452,7 +475,7 @@ void print_symbol(uint8_t v)
   }
 
 
-//  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//  while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
   {
   }
 }
@@ -465,13 +488,13 @@ void print_text(const char * t)
 //  uint8_t dataBuffer[uint8_data_number];
 //  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
 //  {
-//	  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//	  while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
 //	  {
 //	  }
 //  }
   if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
-	  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+	  while (HAL_UART_GetState_gState(&huart2) != HAL_UART_STATE_READY)
 	  {
 	  }
   }
@@ -528,13 +551,13 @@ void print_line()
   uint32_t uint32_data_number_written;
 //  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
 //  {
-//	  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//	  while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
 //	  {
 //	  }
 //  }
   if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
   {
-	  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+	  while (HAL_UART_GetState_gState(&huart2) != HAL_UART_STATE_READY)
 	  {
 	  }
   }
@@ -579,7 +602,7 @@ void print_line()
   }
 
 
-//  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//  while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
   {
   }
 }
@@ -734,11 +757,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   if(FREEEEG16_IN & FREEEEG16_ADS131M08_SPI_OPENVIBE_FREEEEG16_CONFIG_INT)
+//	  	if(flag_UART_RxCplt)
   {
 	    flag_UART_RxCplt = false;
 
+
         if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART1)
       {
+  		  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+  		  {
+  		  }
           if(UART_RECEIVE_DMA)
           {
       	    /* Disable Half Transfer Interrupt */
@@ -759,6 +787,9 @@ int main(void)
       }
         if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART2)
       {
+  		  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+  		  {
+  		  }
           if(UART_RECEIVE_DMA)
           {
       	    /* Disable Half Transfer Interrupt */
@@ -1395,13 +1426,13 @@ int main(void)
 
 //    	  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART1)
 //    	  {
-//    		  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+//    		  while (HAL_UART_GetState_gState(&huart1) != HAL_UART_STATE_READY)
 //    		  {
 //    		  }
 //    	  }
     	  if(FREESMARTEEG_SEND & FREESMARTEEG_SEND_UART2)
     	  {
-    		  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+    		  while (HAL_UART_GetState_gState(&huart2) != HAL_UART_STATE_READY)
     		  {
     		  }
     	  }
@@ -1485,50 +1516,122 @@ int main(void)
     }//FREEEEG32_OUT & FREEEEG32_ADS131M08_SPI_OPENVIBE_FREEEEG32_CUSTOM_INT
 
     if(FREEEEG16_IN & FREEEEG16_ADS131M08_SPI_OPENVIBE_FREEEEG16_CONFIG_INT)
-  	if(flag_UART_RxCplt)
+  	if(UART_RECEIVE_DMA_CIRCULAR || ((!UART_RECEIVE_DMA_CIRCULAR) && (flag_UART_RxCplt)))
     {
   	    flag_UART_RxCplt = false;
 
-  	    for(uint16_t indexValueCNDTR = 0; indexValueCNDTR < uint8_data_number_read-currentValueCNDTR; indexValueCNDTR++)
+        if(UART_RECEIVE_DMA_CIRCULAR)
+        {
+            if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART1)
+            {
+                currentValueCNDTR = __HAL_DMA_GET_COUNTER(huart1.hdmarx);
+            }
+            if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART2)
+            {
+                currentValueCNDTR = __HAL_DMA_GET_COUNTER(huart2.hdmarx);
+            }
+        }
+        pos = (uint8_data_number_read-currentValueCNDTR);
+
+        if(!UART_RECEIVE_DMA_CIRCULAR)
+        {
+        	old_pos = 0;
+        }
+
+        if(old_pos > pos)
+        {
+        	pos = pos + uint8_data_number_read;
+        }
+
+  	    for(size_t index_pos = old_pos; index_pos < pos; index_pos++)
   	    {
-  	  	    if(dataBuffer_read[indexValueCNDTR] == 13)
+  	    	size_t current_pos = index_pos % uint8_data_number_read;
+
+  	    	if(dataBuffer_read[current_pos] == 13)
   	  	    {
   	  	    	config_EOL = true;
   	  	    }
-  	  	    else if(dataBuffer_read[indexValueCNDTR] == ' ')
+  	  	    else if(dataBuffer_read[current_pos] == ' ')
   	  	    {
   	  	    	config_space = true;
   	  	    }
-  	  	    else if(dataBuffer_read[indexValueCNDTR] == '[')
+  	  	    else if(dataBuffer_read[current_pos] == '[')
   	  	    {
   	  	    	if((!config_open) && (config_close))
   	  	    	{
   	  	  	    	config_close = false;
   	  	  	    	config_open = true;
   	  		    	config_dev = true;
+  	  		    	config_command = false;
   	  		    	uint32_tmp_config = 0;
   	  	 	    	config_binary_number = false;
   	  	 	    	config_hex_number = false;
+  	  	 	        config_error = false;
   	  	    	}
   	  	    }
-  	  	    else if(dataBuffer_read[indexValueCNDTR] == ']')
+  	  	    else if(dataBuffer_read[current_pos] == ']')
   	  	    {
   	  	    	if(config_open)
   	  	    	{
   	  	  	    	if(config_data)
   	  	  	    	{
+  	  	  	  	    	data_writeSingleRegister.dev = devices[data_writeSingleRegister.dev_number];
   	  	  	  	    	data_writeSingleRegister.data = uint32_tmp_config;
   	  	  	  	        config_data = false;
   	  	                writeSingleRegister(data_writeSingleRegister.dev, data_writeSingleRegister.address, data_writeSingleRegister.data);
+  	  	                if(FREEEEG16_OUT & FREEEEG16_TEXT_UART_CONFIG)
+  	  	                {
+  	                        print_hex(data_writeSingleRegister.dev_number, 8);
+  	                        print_symbol(';');
+  	                        print_hex(data_writeSingleRegister.address, 8);
+  	                        print_symbol(';');
+  	                        print_binary(data_writeSingleRegister.data, 16);
+  	                        print_symbol(';');
+  	                        print_symbol(';');
+  	                        print_line();
+  	  	                }
+  	  	  	    	}
+  	  	  	    	else if(config_address)
+//  	  	  	  	    	else if(config_command)
+  	  	  	    	{
+  	  	  	  	    	data_writeSingleRegister.dev = devices[data_writeSingleRegister.dev_number];
+  	  	  	  	    	data_writeSingleRegister.command = uint32_tmp_config;
+  	  	  	  	        config_command = true;
+  	  	  	  	        config_address = false;
+  	  	  	  	        if(data_writeSingleRegister.command == OPCODE_LOCK)
+                        {
+  	    	  	  	  	    lockRegisters(data_writeSingleRegister.dev);
+  	  	  	  	        }
+  	  	  	  	        else if(data_writeSingleRegister.command == OPCODE_UNLOCK)
+  	  	  	  	        {
+  	    	  	  	  	    unlockRegisters(data_writeSingleRegister.dev);
+  	  	  	  	        }
+  	  	  	  	        else if(data_writeSingleRegister.command == OPCODE_RESET)
+  	  	  	  	        {
+  	    	  	  	  	    resetDevice(data_writeSingleRegister.dev);
+  	  	  	  	        }
+  	  	  	  	        else
+  	  	  	  	        {
+  	  	  	  	            sendCommand(data_writeSingleRegister.dev, data_writeSingleRegister.command);
+  	  	  	  	        }
+  	  	                if(FREEEEG16_OUT & FREEEEG16_TEXT_UART_CONFIG)
+  	  	                {
+  	                        print_hex(data_writeSingleRegister.dev_number, 8);
+  	                        print_symbol(';');
+  	                        print_hex(data_writeSingleRegister.command, 16);
+  	                        print_symbol(';');
+  	                        print_symbol(';');
+  	                        print_line();
+  	  	                }
   	  	  	    	}
   	  	  	    	config_close = true;
   	  	  	    	config_open = false;
   	  	    	}
   	  	    }
-  	  	    else if(((dataBuffer_read[indexValueCNDTR] >= '0') && (dataBuffer_read[indexValueCNDTR] <= '9')) ||
+  	  	    else if(((dataBuffer_read[current_pos] >= '0') && (dataBuffer_read[current_pos] <= '9')) ||
   	  	    		(config_hex_number &&
-  	  	    				(((dataBuffer_read[indexValueCNDTR] >= 'a') && (dataBuffer_read[indexValueCNDTR] <= 'f')) ||
-  	  	    						((dataBuffer_read[indexValueCNDTR] >= 'A') && (dataBuffer_read[indexValueCNDTR] <= 'F')))))
+  	  	    				(((dataBuffer_read[current_pos] >= 'a') && (dataBuffer_read[current_pos] <= 'f')) ||
+  	  	    						((dataBuffer_read[current_pos] >= 'A') && (dataBuffer_read[current_pos] <= 'F')))))
   	  	    {
   	  	    	if(config_open)
   	  	    	{
@@ -1536,49 +1639,54 @@ int main(void)
   	  		  	    if(config_binary_number)
   	  		  	    {
   	  		  	    	uint32_tmp_config = uint32_tmp_config * 2;
-  	  	  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'0';
+  	  	  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[current_pos]-'0';
   	  		  	    }
   	  		  	    else if(config_hex_number)
   	  		  	    {
   	  		  	    	uint32_tmp_config = uint32_tmp_config * 16;
-  	  		  	        if((dataBuffer_read[indexValueCNDTR] >= 'a') && (dataBuffer_read[indexValueCNDTR] <= 'f'))
+  	  		  	        if((dataBuffer_read[current_pos] >= 'a') && (dataBuffer_read[current_pos] <= 'f'))
   	  		  	        {
-  	  		  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'a';
+  	  		  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[current_pos]-'a';
   	  		  	        }
-  	  		  	        else if((dataBuffer_read[indexValueCNDTR] >= 'A') && (dataBuffer_read[indexValueCNDTR] <= 'F'))
+  	  		  	        else if((dataBuffer_read[current_pos] >= 'A') && (dataBuffer_read[current_pos] <= 'F'))
   	  		  	        {
-  	  		  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'A';
+  	  		  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[current_pos]-'A';
   	  		  	        }
   	  		  	        else
   	  		  	        {
-  	  		  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'0';
+  	  		  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[current_pos]-'0';
   	  		  	        }
   	  		  	    }
   	  		  	    else
   	  		  	    {
   	  		  	    	uint32_tmp_config = uint32_tmp_config * 10;
-  	  	  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[indexValueCNDTR]-'0';
+  	  	  	  	    	uint32_tmp_config = uint32_tmp_config + dataBuffer_read[current_pos]-'0';
   	  		  	    }
   	  	    	}
   	  	    }
-  	  	    else if((dataBuffer_read[indexValueCNDTR] == 'b') || (dataBuffer_read[indexValueCNDTR] == 'B'))
+  	  	    else if((dataBuffer_read[current_pos] == 'b') || (dataBuffer_read[current_pos] == 'B'))
   	  	    {
   	  	    	if(config_open)
   	  	    	{
   	  	    		if(!config_hex_number)
   	  	    		{
   	  	  	  	    	config_binary_number = true;
+//  	  	  	  	    	if(config_address)
+//  	  	  	  	    	{
+//  	  	  	  		    	config_address = false;
+//  	  	  	  		    	config_command = true;
+//  	  	  	  	    	}
   	  	    		}
   	  	    	}
   	  	    }
-  	  	    else if(dataBuffer_read[indexValueCNDTR] == 'x')
+  	  	    else if(dataBuffer_read[current_pos] == 'x')
   	  	    {
   	  	    	if(config_open)
   	  	    	{
   	  	  	    	config_hex_number = true;
   	  	    	}
   	  	    }
-  	  	    else if(dataBuffer_read[indexValueCNDTR] == ',')
+  	  	    else if(dataBuffer_read[current_pos] == ',')
   	  	    {
   	  	    	if(config_open)
   	  	    	{
@@ -1588,53 +1696,78 @@ int main(void)
   	  	  		    	config_address = false;
   	  	  		    	config_data = true;
   	  	  	    	}
-  	  	  	    	if(config_dev)
+  	  	  	    	else if(config_dev)
   	  	  	    	{
-  	  	  	  	    	data_writeSingleRegister.dev = devices[uint32_tmp_config];
+  	  	  	  	    	data_writeSingleRegister.dev_number = uint32_tmp_config;
   	  	  		    	config_dev = false;
   	  	  		    	config_address = true;
   	  	  	    	}
+  	    	  	    else
+  	    	  	    {
+  	    	  	  	    config_error = true;
+  	    	  	    }
+
   	  	  	    	config_semi = true;
   	  		    	uint32_tmp_config = 0;
   	  	 	    	config_binary_number = false;
   	  	 	    	config_hex_number = false;
   	  	    	}
   	  	    }
-  	    }
+  	  	    else
+  	  	    {
+  	  	  	    config_error = true;
+  	  	    }
+  	    	if(config_error)
+  	  	    {
+  	  	    	config_close = true;
+  	  	    	config_open = false;
+  	  	    }
 
-        if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART1)
+  	    }
+  	    old_pos = pos % uint8_data_number_read;
+
+        if(!UART_RECEIVE_DMA_CIRCULAR)
         {
-            if(UART_RECEIVE_DMA)
+            if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART1)
             {
-                if(HAL_UART_Receive_DMA(&huart1, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
-//                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+      		  while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+      		  {
+      		  }
+                if(UART_RECEIVE_DMA)
                 {
-                  Error_Handler();
-                }
-            } else
-            {
-//                if(HAL_UART_Receive(&huart2, (uint8_t*)dataBuffer_read, 1,5000) != HAL_OK)
-                if(HAL_UART_Receive_IT(&huart1, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                    if(HAL_UART_Receive_DMA(&huart1, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+    //                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                    {
+                      Error_Handler();
+                    }
+                } else
                 {
-                  Error_Handler();
+    //                if(HAL_UART_Receive(&huart2, (uint8_t*)dataBuffer_read, 1,5000) != HAL_OK)
+                    if(HAL_UART_Receive_IT(&huart1, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                    {
+                      Error_Handler();
+                    }
                 }
             }
-        }
-        if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART2)
-        {
-            if(UART_RECEIVE_DMA)
+            if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART2)
             {
-                if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
-//                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+      		  while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+      		  {
+      		  }
+                if(UART_RECEIVE_DMA)
                 {
-                  Error_Handler();
-                }
-            } else
-            {
-//                if(HAL_UART_Receive(&huart2, (uint8_t*)dataBuffer_read, 1,5000) != HAL_OK)
-                if(HAL_UART_Receive_IT(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+    //                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                    {
+                      Error_Handler();
+                    }
+                } else
                 {
-                  Error_Handler();
+    //                if(HAL_UART_Receive(&huart2, (uint8_t*)dataBuffer_read, 1,5000) != HAL_OK)
+                    if(HAL_UART_Receive_IT(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
+                    {
+                      Error_Handler();
+                    }
                 }
             }
         }
@@ -2006,11 +2139,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if(huart->Instance == USART1)
-//        if(huart->Instance == USART2)
+//    if((huart->Instance == USART1) || (huart->Instance == USART2))
     {
   	  flag_UART_RxCplt = true;
-  	  currentValueCNDTR = __HAL_DMA_GET_COUNTER(huart->hdmarx);
+      if(UART_RECEIVE_DMA)
+      {
+      	  currentValueCNDTR = __HAL_DMA_GET_COUNTER(huart->hdmarx);
+      }
     }
 }
 
