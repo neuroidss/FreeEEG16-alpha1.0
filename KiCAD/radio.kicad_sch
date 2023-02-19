@@ -5,14 +5,14 @@
   (paper "A4")
 
   (lib_symbols
-    (symbol "Espressif:ESP32-C3-WROOM-02" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
-      (property "Reference" "U" (at -25.4 30.48 0)
-        (effects (font (size 1.27 1.27)) (justify left))
+    (symbol "FreeEEG16-alpha-adc_mcu:ESP32-C3-WROOM-02_allpins" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
+      (property "Reference" "U9" (at 0 30.48 0)
+        (effects (font (size 1.27 1.27)))
       )
-      (property "Value" "ESP32-C3-WROOM-02" (at -25.4 27.94 0)
-        (effects (font (size 1.27 1.27)) (justify left))
+      (property "Value" "ESP32-C3-WROOM-02" (at 0 27.94 0)
+        (effects (font (size 1.27 1.27)))
       )
-      (property "Footprint" "Espressif:ESP32-C3-WROOM-02" (at 0 -30.48 0)
+      (property "Footprint" "Espressif:ESP32-C3-WROOM-02U" (at 0 -30.48 0)
         (effects (font (size 1.27 1.27)) hide)
       )
       (property "Datasheet" "https://www.espressif.com/sites/default/files/documentation/esp32-c3-wroom-02_datasheet_en.pdf" (at 0 -27.94 0)
@@ -24,18 +24,18 @@
       (property "ki_description" "ESP32-C3-WROOM-02 is a general-purpose Wi-Fi and Bluetooth LE module. This module features a rich set of peripherals and high performance, which makes it an ideal choice for smart home, industrial automation, health care, consumer electronics, etc." (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (symbol "ESP32-C3-WROOM-02_0_0"
+      (symbol "ESP32-C3-WROOM-02_allpins_0_0"
         (text "ESP32-C3-WROOM-02" (at 0 -17.78 0)
           (effects (font (size 2.54 2.54)))
         )
       )
-      (symbol "ESP32-C3-WROOM-02_0_1"
+      (symbol "ESP32-C3-WROOM-02_allpins_0_1"
         (rectangle (start -25.4 25.4) (end 25.4 -25.4)
           (stroke (width 0.254) (type default))
           (fill (type background))
         )
       )
-      (symbol "ESP32-C3-WROOM-02_1_1"
+      (symbol "ESP32-C3-WROOM-02_allpins_1_1"
         (pin power_in line (at -27.94 -22.86 0) (length 2.54)
           (name "3V3" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
@@ -108,7 +108,7 @@
           (name "GPIO9" (effects (font (size 1.27 1.27))))
           (number "8" (effects (font (size 1.27 1.27))))
         )
-        (pin power_in line (at 25.4 -22.86 180) (length 2.54) hide
+        (pin power_in line (at 25.4 -20.32 180) (length 2.54)
           (name "GND" (effects (font (size 1.27 1.27))))
           (number "9" (effects (font (size 1.27 1.27))))
         )
@@ -194,6 +194,10 @@
     (stroke (width 0) (type default))
     (uuid 33118646-2bea-4512-bfdd-d569dd3cc55b)
   )
+  (wire (pts (xy 95.25 77.47) (xy 97.79 77.47))
+    (stroke (width 0) (type default))
+    (uuid 620b821c-abd7-4668-8096-7eeff6276f93)
+  )
   (wire (pts (xy 91.44 104.14) (xy 91.44 106.68))
     (stroke (width 0) (type default))
     (uuid 7e2813b0-f9ae-45d3-8561-2ab238637555)
@@ -251,6 +255,10 @@
     (uuid f3377bb6-4812-4a49-9f66-4e1307c85488)
   )
 
+  (hierarchical_label "9_GND" (shape input) (at 97.79 77.47 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid 01ce4f06-5d8e-45fe-ac02-cbcd0e641d7c)
+  )
   (hierarchical_label "1_3V3" (shape input) (at 91.44 96.52 90) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 01eea47b-1954-4d69-91cc-639f9aa51589)
@@ -340,7 +348,7 @@
     (uuid fc98e972-4c57-473b-8b4d-c3462ac693bc)
   )
 
-  (symbol (lib_id "Espressif:ESP32-C3-WROOM-02") (at 69.85 57.15 0) (unit 1)
+  (symbol (lib_id "FreeEEG16-alpha-adc_mcu:ESP32-C3-WROOM-02_allpins") (at 69.85 57.15 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 244996bf-fce5-48a4-911c-2c08d530794d)
     (property "Reference" "U9" (at 69.85 26.67 0)

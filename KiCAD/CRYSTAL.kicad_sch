@@ -121,7 +121,7 @@
     (property "Value" "FXO-SM7_OSC-SMD7050_short" (at 137.16 73.8886 0)
       (effects (font (size 1.524 1.524)))
     )
-    (property "Footprint" "Oscillator:Oscillator_SMD_ECS_2520MV-xxx-xx-4Pin_2.5x2.0mm" (at 135.89 78.74 0)
+    (property "Footprint" "freeeeg16:Oscillator_SMD_EuroQuartz_XO32-4Pin_3.2x2.5mm_HandSoldering_cut" (at 135.89 78.74 0)
       (effects (font (size 1.524 1.524)) hide)
     )
     (property "Datasheet" "" (at 135.89 78.74 0)

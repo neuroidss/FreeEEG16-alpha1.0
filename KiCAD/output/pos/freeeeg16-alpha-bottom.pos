@@ -1,4 +1,4 @@
-### Footprint positions - created on Sat 18 Feb 2023 04:31:04 AM MSK ###
+### Footprint positions - created on Sun 19 Feb 2023 04:44:11 AM MSK ###
 ### Printed by KiCad version 7.0.0-da2b9df05c~163~ubuntu22.04.1
 ## Unit = mm, Angle = deg.
 ## Side : bottom
@@ -23,6 +23,7 @@ C33       100nF                C_0402_1005Metric                  -2.2444    -0.
 C34       100nF                C_0402_1005Metric                   5.7150    -3.4706  135.0000  bottom
 C35       100nF                C_0402_1005Metric                   0.0000   -11.0490  180.0000  bottom
 C36       100nF                C_0402_1005Metric                  -6.9850    -6.0960   90.0000  bottom
+C38       100nF                C_0402_1005Metric                  -0.0280    13.9700  180.0000  bottom
 J28       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    -8.6310    -9.0270   90.0000  bottom
 J29       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    11.1679    -9.0270   90.0000  bottom
 J30       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical   -13.4016    -5.1582  -30.0000  bottom
@@ -30,6 +31,7 @@ J31       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    12.1331    -2.
 J32       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    -3.5021    11.9882  -30.0000  bottom
 J33       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical     2.2336    14.1852  -150.0000  bottom
 R2        0                    R_0402_1005Metric                   0.0180    20.5740    0.0000  bottom
+R4        0                    R_0402_1005Metric                   0.0000    15.2400    0.0000  bottom
 R5        4k7                  R_0402_1005Metric                   7.1120   -10.6680   45.0000  bottom
 R6        4k7                  R_0402_1005Metric                  -6.9850    -4.3180  -90.0000  bottom
 SW1       SW_Push              SW_SPST_B3U-1000P-B                 5.5880    -9.3980  -135.0000  bottom
