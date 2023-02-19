@@ -28,8 +28,8 @@ WiFiMulti wifiMulti;
 #define BAUD 921600       // Any baudrate from 300 to 115200
 //#define BAUD 115200       // Any baudrate from 300 to 115200
 #define TEST_UART 1     // Serial1 will be used for the loopback testing with different RX FIFO FULL values
-#define RXPIN 2         // GPIO 4 => RX for Serial1
-#define TXPIN 3         // GPIO 5 => TX for Serial1
+#define RXPIN 7         // GPIO 4 => RX for Serial1
+#define TXPIN 6         // GPIO 5 => TX for Serial1
 const char* ssid = "**********";
 const char* password = "**********";
 
