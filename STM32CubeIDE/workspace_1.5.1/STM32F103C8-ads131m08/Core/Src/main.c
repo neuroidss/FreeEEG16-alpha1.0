@@ -48,6 +48,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 DMA_HandleTypeDef hdma_spi1_rx;
@@ -146,6 +148,7 @@ static void MX_SPI2_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART3_UART_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 void print_hex(int v, int num_places);
@@ -623,6 +626,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
   if((FREEEEG16_OUT & FREEEEG16_TEST_COUNTER))
@@ -735,7 +739,7 @@ int main(void)
 
         if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART1)
       {
-          if(UART_DMA)
+          if(UART_RECEIVE_DMA)
           {
       	    /* Disable Half Transfer Interrupt */
       	    __HAL_DMA_DISABLE_IT(huart1.hdmarx, DMA_IT_HT);
@@ -755,7 +759,7 @@ int main(void)
       }
         if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART2)
       {
-          if(UART_DMA)
+          if(UART_RECEIVE_DMA)
           {
       	    /* Disable Half Transfer Interrupt */
       	    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
@@ -916,7 +920,7 @@ int main(void)
 //            data_counter++;
       }
 
-    if(FREEEEG16_OUT & FREEEEG16_ADS131M08_SPI_TEXT_UART1_INT)
+    if(FREEEEG16_OUT & FREEEEG16_ADS131M08_SPI_TEXT_UART_INT)
 //          if(readSingleRegister(devices[3], STATUS_ADDRESS)&STATUS_DRDY0_MASK==STATUS_DRDY0_NEW_DATA)
 //          if(SPI_RxCplt)
         if(flag_nDRDY_INTERRUPT)
@@ -1600,7 +1604,7 @@ int main(void)
 
         if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART1)
         {
-            if(UART_DMA)
+            if(UART_RECEIVE_DMA)
             {
                 if(HAL_UART_Receive_DMA(&huart1, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
 //                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
@@ -1618,7 +1622,7 @@ int main(void)
         }
         if(FREESMARTEEG_RECEIVE & FREESMARTEEG_RECEIVE_UART2)
         {
-            if(UART_DMA)
+            if(UART_RECEIVE_DMA)
             {
                 if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
 //                    if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)dataBuffer_read, uint8_data_number_read) != HAL_OK)
@@ -1677,6 +1681,40 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   HAL_RCC_MCOConfig(RCC_MCO, RCC_MCO1SOURCE_HSE, RCC_MCODIV_1);
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
 }
 
 /**
