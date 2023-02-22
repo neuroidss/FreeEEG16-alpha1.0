@@ -1,4 +1,4 @@
-### Footprint positions - created on Sun 19 Feb 2023 04:44:11 AM MSK ###
+### Footprint positions - created on Wed 22 Feb 2023 11:58:13 PM MSK ###
 ### Printed by KiCad version 7.0.0-da2b9df05c~163~ubuntu22.04.1
 ## Unit = mm, Angle = deg.
 ## Side : bottom
@@ -7,7 +7,7 @@ C1        2.2u                 C_0603_1608Metric                  17.3990   -10.
 C2        2.2u                 C_0603_1608Metric                  11.4300    -6.6040  -120.0000  bottom
 C3        2.2u                 C_0603_1608Metric                 -17.3990   -10.0330  120.0000  bottom
 C4        2.2u                 C_0603_1608Metric                 -11.4300    -6.6040  120.0000  bottom
-C5        1u                   C_0402_1005Metric                   0.8890     3.5280  -90.0000  bottom
+C5        1u                   C_0402_1005Metric                   1.0414     3.5814  -90.0000  bottom
 C6        220nF                C_0402_1005Metric                   4.6990     7.1120    0.0000  bottom
 C7        1u                   C_0402_1005Metric                   6.4770     7.1120  180.0000  bottom
 C11       1u                   C_0402_1005Metric                  -6.0960     8.6080  -90.0000  bottom
@@ -15,7 +15,7 @@ C12       220nF                C_0402_1005Metric                  -0.8890     3.
 C13       1u                   C_0402_1005Metric                  -0.8890     1.2700  -90.0000  bottom
 C16       22u                  C_0805_2012Metric                  -4.5720     9.3980   90.0000  bottom
 C17       22u                  C_0805_2012Metric                   4.5720     9.3980   90.0000  bottom
-C20       100n                 C_0402_1005Metric                  -7.0104   -10.6680  -45.0000  bottom
+C20       100n                 C_0402_1005Metric                  -5.0800   -10.3378  -45.0000  bottom
 C21       100nF                C_0402_1005Metric                   0.8890     1.2700   90.0000  bottom
 C22       100nF                C_0402_1005Metric                  -5.5880     7.2390  180.0000  bottom
 C32       4.7u                 C_0603_1608Metric                   6.7310    -5.5880  -90.0000  bottom
@@ -23,7 +23,7 @@ C33       100nF                C_0402_1005Metric                  -2.2444    -0.
 C34       100nF                C_0402_1005Metric                   5.7150    -3.4706  135.0000  bottom
 C35       100nF                C_0402_1005Metric                   0.0000   -11.0490  180.0000  bottom
 C36       100nF                C_0402_1005Metric                  -6.9850    -6.0960   90.0000  bottom
-C38       100nF                C_0402_1005Metric                  -0.0280    13.9700  180.0000  bottom
+C41       100n                 C_0402_1005Metric                  -6.5024    -8.9408  135.0000  bottom
 J28       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    -8.6310    -9.0270   90.0000  bottom
 J29       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    11.1679    -9.0270   90.0000  bottom
 J30       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical   -13.4016    -5.1582  -30.0000  bottom
@@ -31,11 +31,11 @@ J31       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    12.1331    -2.
 J32       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    -3.5021    11.9882  -30.0000  bottom
 J33       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical     2.2336    14.1852  -150.0000  bottom
 R2        0                    R_0402_1005Metric                   0.0180    20.5740    0.0000  bottom
-R4        0                    R_0402_1005Metric                   0.0000    15.2400    0.0000  bottom
-R5        4k7                  R_0402_1005Metric                   7.1120   -10.6680   45.0000  bottom
+R4        0                    R_0402_1005Metric                   0.0000    15.3670    0.0000  bottom
+R5        4k7                  R_0402_1005Metric                   5.7150    -9.4742   45.0000  bottom
 R6        4k7                  R_0402_1005Metric                  -6.9850    -4.3180  -90.0000  bottom
-SW1       SW_Push              SW_SPST_B3U-1000P-B                 5.5880    -9.3980  -135.0000  bottom
-SW2       SW_Push              SW_SPST_B3U-1000P-B                -5.5880    -9.3980  -45.0000  bottom
+R8        0                    R_0402_1005Metric                 -10.6426    -1.4478  -120.0000  bottom
+R10       0                    R_0402_1005Metric                  10.7188    -1.3970  -60.0000  bottom
 U3        ADS131M08IPBSR       LQFP-32_5x5mm_P0.5mm                6.2230     2.2860  135.0000  bottom
 U4        LP5907               SOT-23-5                          -14.7320    -8.5090   30.0000  bottom
 U6        STM32F103CBTx        LQFP-48_7x7mm_P0.5mm                0.0000    -5.5880   45.0000  bottom
