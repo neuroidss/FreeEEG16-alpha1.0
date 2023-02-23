@@ -1,4 +1,4 @@
-### Footprint positions - created on Wed 22 Feb 2023 11:58:13 PM MSK ###
+### Footprint positions - created on Thu 23 Feb 2023 01:52:29 PM MSK ###
 ### Printed by KiCad version 7.0.0-da2b9df05c~163~ubuntu22.04.1
 ## Unit = mm, Angle = deg.
 ## Side : bottom
@@ -8,21 +8,21 @@ C2        2.2u                 C_0603_1608Metric                  11.4300    -6.
 C3        2.2u                 C_0603_1608Metric                 -17.3990   -10.0330  120.0000  bottom
 C4        2.2u                 C_0603_1608Metric                 -11.4300    -6.6040  120.0000  bottom
 C5        1u                   C_0402_1005Metric                   1.0414     3.5814  -90.0000  bottom
-C6        220nF                C_0402_1005Metric                   4.6990     7.1120    0.0000  bottom
+C6        220n                 C_0402_1005Metric                   4.6990     7.1120    0.0000  bottom
 C7        1u                   C_0402_1005Metric                   6.4770     7.1120  180.0000  bottom
 C11       1u                   C_0402_1005Metric                  -6.0960     8.6080  -90.0000  bottom
-C12       220nF                C_0402_1005Metric                  -0.8890     3.5560  -90.0000  bottom
+C12       220n                 C_0402_1005Metric                  -0.8890     3.5560  -90.0000  bottom
 C13       1u                   C_0402_1005Metric                  -0.8890     1.2700  -90.0000  bottom
 C16       22u                  C_0805_2012Metric                  -4.5720     9.3980   90.0000  bottom
 C17       22u                  C_0805_2012Metric                   4.5720     9.3980   90.0000  bottom
 C20       100n                 C_0402_1005Metric                  -5.0800   -10.3378  -45.0000  bottom
-C21       100nF                C_0402_1005Metric                   0.8890     1.2700   90.0000  bottom
-C22       100nF                C_0402_1005Metric                  -5.5880     7.2390  180.0000  bottom
+C21       100n                 C_0402_1005Metric                   0.8890     1.2700   90.0000  bottom
+C22       100n                 C_0402_1005Metric                  -5.5880     7.2390  180.0000  bottom
 C32       4.7u                 C_0603_1608Metric                   6.7310    -5.5880  -90.0000  bottom
-C33       100nF                C_0402_1005Metric                  -2.2444    -0.0854  -135.0000  bottom
-C34       100nF                C_0402_1005Metric                   5.7150    -3.4706  135.0000  bottom
-C35       100nF                C_0402_1005Metric                   0.0000   -11.0490  180.0000  bottom
-C36       100nF                C_0402_1005Metric                  -6.9850    -6.0960   90.0000  bottom
+C33       100n                 C_0402_1005Metric                  -2.2444    -0.0854  -135.0000  bottom
+C34       100n                 C_0402_1005Metric                   5.7150    -3.4706  135.0000  bottom
+C35       100n                 C_0402_1005Metric                   0.0000   -11.0490  180.0000  bottom
+C36       100n                 C_0402_1005Metric                  -6.9850    -6.0960   90.0000  bottom
 C41       100n                 C_0402_1005Metric                  -6.5024    -8.9408  135.0000  bottom
 J28       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    -8.6310    -9.0270   90.0000  bottom
 J29       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    11.1679    -9.0270   90.0000  bottom
