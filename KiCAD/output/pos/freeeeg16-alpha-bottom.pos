@@ -1,4 +1,4 @@
-### Footprint positions - created on Thu 23 Feb 2023 02:23:32 PM MSK ###
+### Footprint positions - created on Wed 01 Mar 2023 01:28:54 AM MSK ###
 ### Printed by KiCad version 7.0.0-da2b9df05c~163~ubuntu22.04.1
 ## Unit = mm, Angle = deg.
 ## Side : bottom
@@ -23,6 +23,7 @@ C33       100n                 C_0402_1005Metric                  -2.2444    -0.
 C34       100n                 C_0402_1005Metric                   5.7150    -3.4706  135.0000  bottom
 C35       100n                 C_0402_1005Metric                   0.0000   -11.0490  180.0000  bottom
 C36       100n                 C_0402_1005Metric                  -6.9850    -6.0960   90.0000  bottom
+C40       100n                 C_0402_1005Metric                  12.5984   -10.1346  -120.0000  bottom
 C41       100n                 C_0402_1005Metric                  -6.5024    -8.9408  135.0000  bottom
 J28       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    -8.6310    -9.0270   90.0000  bottom
 J29       Conn_02x03_Odd_Even  PinSocket_2x03_P1.27mm_Vertical    11.1679    -9.0270   90.0000  bottom
@@ -36,6 +37,7 @@ R5        4k7                  R_0402_1005Metric                   5.7150    -9.
 R6        4k7                  R_0402_1005Metric                  -6.9850    -4.3180  -90.0000  bottom
 R8        0                    R_0402_1005Metric                 -10.6426    -1.4478  -120.0000  bottom
 R10       0                    R_0402_1005Metric                  10.7188    -1.3970  -60.0000  bottom
+R12       0_DNP                R_0402_1005Metric                  13.3430   -10.5421  -120.0000  bottom
 U3        ADS131M08IPBSR       LQFP-32_5x5mm_P0.5mm                6.2230     2.2860  135.0000  bottom
 U4        LP5907               SOT-23-5                          -14.7320    -8.5090   30.0000  bottom
 U6        STM32F103CBTx        LQFP-48_7x7mm_P0.5mm                0.0000    -5.5880   45.0000  bottom

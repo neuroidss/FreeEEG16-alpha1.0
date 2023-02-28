@@ -521,10 +521,6 @@
       "ADC2"
     ],
     [
-      "417fa2b4-cb0d-417f-934d-a80b2224fa3f",
-      "vref"
-    ],
-    [
       "b561a712-e779-4a0f-b6e2-a7b8bfa06a21",
       "ADC1"
     ],
@@ -545,12 +541,12 @@
       "MCU"
     ],
     [
-      "1d1b2de8-50a7-4eba-bd3b-e94eea6b2633",
-      "RADIO"
+      "9a600885-1ade-44bb-8a42-e0f1be522367",
+      "vref2"
     ],
     [
-      "5dad9be5-cda9-479f-bdf6-1cdd693e0956",
-      "vref1"
+      "1d1b2de8-50a7-4eba-bd3b-e94eea6b2633",
+      "RADIO"
     ]
   ],
   "text_variables": {}
