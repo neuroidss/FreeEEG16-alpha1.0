@@ -1,4 +1,4 @@
-### Footprint positions - created on Wed 01 Mar 2023 01:28:54 AM MSK ###
+### Footprint positions - created on Mon 03 Apr 2023 02:04:25 AM MSK ###
 ### Printed by KiCad version 7.0.0-da2b9df05c~163~ubuntu22.04.1
 ## Unit = mm, Angle = deg.
 ## Side : top
@@ -11,7 +11,7 @@ C28       100n                 C_0402_1005Metric                                
 C29       10u                  C_0603_1608Metric                                                  11.4300    -6.6040   60.0000  top
 C37       10u                  C_0603_1608Metric                                                  -7.1120     8.0010    0.0000  top
 C38       100n                 C_0402_1005Metric                                                 -10.3632     4.0132  -120.0000  top
-C39       100n                 C_0402_1005Metric                                                 -10.2108    -1.4224   90.0000  top
+C39       1u                   C_0402_1005Metric                                                 -10.4902    -1.6510  -15.0000  top
 C43       10u_DNP              C_0603_1608Metric                                                  13.3350   -10.3886  150.0000  top
 J1        Conn_02x03_Odd_Even  PinHeader_2x03_P1.27mm_Vertical                                    -0.6250    19.0550    0.0000  top
 J2        Conn_01x03           PinHeader_1x03_P1.27mm_Vertical                                   -12.3469    -1.1042  150.0000  top
@@ -19,9 +19,10 @@ J3        Conn_01x03           PinHeader_1x03_P1.27mm_Vertical                  
 J5        Conn_01x08           Molex_PicoBlade_53398-0871_1x08-1MP_P1.25mm_Vertical_cut            0.0000    -8.7210    0.0000  top
 J6        Conn_01x06           Molex_PicoBlade_53398-0671_1x06-1MP_P1.25mm_Vertical                0.0000     8.7210  180.0000  top
 R1        0                    R_0402_1005Metric                                                   0.0180    20.5740    0.0000  top
-R7        10k                  R_0402_1005Metric                                                 -10.5430    -3.1750  180.0000  top
+R7        10k                  R_0402_1005Metric                                                 -10.5156    -4.2418  165.0000  top
 R9        10k                  R_0402_1005Metric                                                   7.4930     8.0010  180.0000  top
 R11       0                    R_0402_1005Metric                                                  16.0528    -6.5786  150.0000  top
+R13       10k                  R_0402_1005Metric                                                 -10.5156    -2.8194  -165.0000  top
 U2        8.192MHz             Oscillator_SMD_EuroQuartz_XO32-4Pin_3.2x2.5mm_HandSoldering_cut     0.0000    13.5890  -90.0000  top
 U5        LP5907               SOT-23-5                                                          -14.7320    -8.5090   30.0000  top
 U9        ESP32-C3-WROOM-02    ESP32-C3-WROOM-02U                                                  0.0000     0.0000    0.0000  top

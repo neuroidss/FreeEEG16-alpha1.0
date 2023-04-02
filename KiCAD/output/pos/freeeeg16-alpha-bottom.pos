@@ -1,4 +1,4 @@
-### Footprint positions - created on Wed 01 Mar 2023 01:28:54 AM MSK ###
+### Footprint positions - created on Mon 03 Apr 2023 02:04:25 AM MSK ###
 ### Printed by KiCad version 7.0.0-da2b9df05c~163~ubuntu22.04.1
 ## Unit = mm, Angle = deg.
 ## Side : bottom
@@ -21,7 +21,7 @@ C22       100n                 C_0402_1005Metric                  -5.5880     7.
 C32       4.7u                 C_0603_1608Metric                   6.7310    -5.5880  -90.0000  bottom
 C33       100n                 C_0402_1005Metric                  -2.2444    -0.0854  -135.0000  bottom
 C34       100n                 C_0402_1005Metric                   5.7150    -3.4706  135.0000  bottom
-C35       100n                 C_0402_1005Metric                   0.0000   -11.0490  180.0000  bottom
+C35       100n                 C_0402_1005Metric                   4.1148   -10.7442    0.0000  bottom
 C36       100n                 C_0402_1005Metric                  -6.9850    -6.0960   90.0000  bottom
 C40       100n                 C_0402_1005Metric                  12.5984   -10.1346  -120.0000  bottom
 C41       100n                 C_0402_1005Metric                  -6.5024    -8.9408  135.0000  bottom
