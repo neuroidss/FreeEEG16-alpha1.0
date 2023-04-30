@@ -103,7 +103,8 @@ uint16_t getRegisterValue(ads131m0x_dev *dev, uint8_t address)
 uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
 {
 	/* (OPTIONAL) Provide additional delay time for power supply settling */
-	delay_ms(50);
+//	delay_ms(50);
+	delay_ms(100);
 
 	/* (REQUIRED) Set nRESET pin high for ADC operation */
 	if(reset)
@@ -117,6 +118,8 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
 	{
 		toggleRESET(dev);
 	}
+
+	delay_ms(100);
 
     /* (REQUIRED) Initialize internal 'registerMap' array with device default settings */
 	restoreRegisterDefaults(dev);
@@ -142,8 +145,8 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
         		| CLOCK_OSR_16384
 //    			| CLOCK_XTAL_DIS_DISABLED
     			| CLOCK_XTAL_DIS_ENABLED
-//    			| CLOCK_EXTREF_EN_ENABLED
-    			| CLOCK_EXTREF_EN_DISABLED
+    			| CLOCK_EXTREF_EN_ENABLED
+//    			| CLOCK_EXTREF_EN_DISABLED
     			| CLOCK_PWR_HR
     //			| CLOCK_PWR_LP
     //			| CLOCK_PWR_VLP
@@ -272,7 +275,7 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
 //		| CFG_GC_DLY_65536);
     }
 
-    if(1)
+//    if(1)
     {
 //        writeSingleRegister(dev, THRSHLD_MSB_ADDRESS, (THRSHLD_MSB_DEFAULT
 //        		& ~THRSHLD_MSB_CD_TH_MSB_MASK)
@@ -296,7 +299,7 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
 //    	| THRSHLD_LSB_DCBLOCK_65536);
     }
 
-    if(0)
+//    if(0)
     {
         writeSingleRegister(dev, CH0_CFG_ADDRESS, (CH0_CFG_DEFAULT & ~CH0_CFG_MUX0_MASK) | CH0_CFG_MUX0_ADC_INPUT_SHORT);
         writeSingleRegister(dev, CH1_CFG_ADDRESS, (CH1_CFG_DEFAULT & ~CH1_CFG_MUX1_MASK) | CH1_CFG_MUX1_ADC_INPUT_SHORT);
@@ -306,6 +309,18 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
         writeSingleRegister(dev, CH5_CFG_ADDRESS, (CH5_CFG_DEFAULT & ~CH5_CFG_MUX5_MASK) | CH5_CFG_MUX5_ADC_INPUT_SHORT);
         writeSingleRegister(dev, CH6_CFG_ADDRESS, (CH6_CFG_DEFAULT & ~CH6_CFG_MUX6_MASK) | CH6_CFG_MUX6_ADC_INPUT_SHORT);
         writeSingleRegister(dev, CH7_CFG_ADDRESS, (CH7_CFG_DEFAULT & ~CH7_CFG_MUX7_MASK) | CH7_CFG_MUX7_ADC_INPUT_SHORT);
+    }
+
+    if(0)
+    {
+        writeSingleRegister(dev, CH0_CFG_ADDRESS, (CH0_CFG_DEFAULT & ~CH0_CFG_MUX0_MASK) | CH0_CFG_MUX0_DC_DIAGNOSTIC);
+        writeSingleRegister(dev, CH1_CFG_ADDRESS, (CH1_CFG_DEFAULT & ~CH1_CFG_MUX1_MASK) | CH0_CFG_MUX1_DC_DIAGNOSTIC);
+        writeSingleRegister(dev, CH2_CFG_ADDRESS, (CH2_CFG_DEFAULT & ~CH2_CFG_MUX2_MASK) | CH0_CFG_MUX2_DC_DIAGNOSTIC);
+        writeSingleRegister(dev, CH3_CFG_ADDRESS, (CH3_CFG_DEFAULT & ~CH3_CFG_MUX3_MASK) | CH0_CFG_MUX3_DC_DIAGNOSTIC);
+        writeSingleRegister(dev, CH4_CFG_ADDRESS, (CH4_CFG_DEFAULT & ~CH4_CFG_MUX4_MASK) | CH0_CFG_MUX4_DC_DIAGNOSTIC);
+        writeSingleRegister(dev, CH5_CFG_ADDRESS, (CH5_CFG_DEFAULT & ~CH5_CFG_MUX5_MASK) | CH0_CFG_MUX5_DC_DIAGNOSTIC);
+        writeSingleRegister(dev, CH6_CFG_ADDRESS, (CH6_CFG_DEFAULT & ~CH6_CFG_MUX6_MASK) | CH0_CFG_MUX6_DC_DIAGNOSTIC);
+        writeSingleRegister(dev, CH7_CFG_ADDRESS, (CH7_CFG_DEFAULT & ~CH7_CFG_MUX7_MASK) | CH0_CFG_MUX7_DC_DIAGNOSTIC);
     }
 
 
