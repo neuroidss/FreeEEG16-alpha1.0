@@ -275,7 +275,7 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
 //		| CFG_GC_DLY_65536);
     }
 
-//    if(1)
+    if(1)
     {
 //        writeSingleRegister(dev, THRSHLD_MSB_ADDRESS, (THRSHLD_MSB_DEFAULT
 //        		& ~THRSHLD_MSB_CD_TH_MSB_MASK)
@@ -299,7 +299,7 @@ uint16_t adcStartup(ads131m0x_dev *dev, bool reset)
 //    	| THRSHLD_LSB_DCBLOCK_65536);
     }
 
-//    if(0)
+    if(0)
     {
         writeSingleRegister(dev, CH0_CFG_ADDRESS, (CH0_CFG_DEFAULT & ~CH0_CFG_MUX0_MASK) | CH0_CFG_MUX0_ADC_INPUT_SHORT);
         writeSingleRegister(dev, CH1_CFG_ADDRESS, (CH1_CFG_DEFAULT & ~CH1_CFG_MUX1_MASK) | CH1_CFG_MUX1_ADC_INPUT_SHORT);
